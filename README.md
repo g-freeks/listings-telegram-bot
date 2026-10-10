@@ -89,6 +89,15 @@ takes a few minutes; pulling the prebuilt image is much faster. No host-side
 `docker-entrypoint.sh` fixes ownership of the mounted volumes automatically on
 every start, regardless of what user created them.
 
+`docker-compose.yml` intentionally has no `build:` key — only `image:` — so
+it's always pull-only by itself; `docker-compose.override.yml` adds `build: .`
+back, and `docker compose` auto-loads it when run from this directory. Tools
+that deploy straight from `docker-compose.yml` (e.g. **Portainer**'s
+"Repository" stack type) never see the override, so they just pull and never
+try to build — which matters, because Portainer's own container often can't
+build at all (`mkdir /.docker: permission denied`, since it has no writable
+`HOME`, unrelated to this project).
+
 Check it's running:
 
 ```bash

@@ -1,10 +1,10 @@
 services:
   bot:
     # Pulls the CI-built image (.github/workflows/docker-build.yml, pushed on
-    # every push to main) if it's not already present locally. `build:` is
-    # still here for local development — `docker compose build` (or `up
-    # --build`) rebuilds from source under this same tag instead of pulling.
-    build: .
+    # every push to main) — intentionally no `build:` here, so tools like
+    # Portainer that deploy straight from this file only ever pull, never
+    # build. For local development, docker-compose.override.yml (auto-loaded
+    # alongside this file) adds `build: .` back.
     image: ghcr.io/g-freeks/listings-telegram-bot:latest
     read_only: true
     cap_drop:
