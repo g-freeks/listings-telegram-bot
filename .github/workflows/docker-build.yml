@@ -15,6 +15,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # The default "docker" buildx driver can't export to the GHA cache
+      # backend used below; this swaps in the "docker-container" driver.
+      - uses: docker/setup-buildx-action@v3
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
