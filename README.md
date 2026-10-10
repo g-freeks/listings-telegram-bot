@@ -67,12 +67,25 @@ profile, financials, and the Telegram group's chat ID, never committed):
 
 ### 4. Build and run
 
+Every push to `main` builds and publishes an image to GHCR
+(`.github/workflows/docker-build.yml`), so you can just pull it instead of
+building locally:
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+Or build from source instead (e.g. if you've changed the Dockerfile or `app/`
+code):
+
 ```bash
 docker compose up -d --build
 ```
 
-First build downloads and installs Playwright's Chromium (~300 MB) and takes
-a few minutes. No host-side `chown` or permission setup is needed —
+A from-source build downloads and installs Playwright's Chromium (~300 MB) and
+takes a few minutes; pulling the prebuilt image is much faster. No host-side
+`chown` or permission setup is needed either way —
 `docker-entrypoint.sh` fixes ownership of the mounted volumes automatically on
 every start, regardless of what user created them.
 
