@@ -1,0 +1,34 @@
+services:
+  bot:
+    build: .
+    image: listings-telegram-bot:local
+    read_only: true
+    cap_drop:
+      - ALL
+    cap_add:
+      # Needed only by docker-entrypoint.sh's startup chown + drop-to-node
+      # (gosu) handoff, before any network input is read. The actual bot /
+      # claude / Chromium process that follows runs as non-root `node` with
+      # none of these capabilities, same as a plain cap_drop: ALL container.
+      - CHOWN
+      - DAC_OVERRIDE  # chown -R must traverse dirs it doesn't yet own
+      - SETUID
+      - SETGID
+    tmpfs:
+      - /tmp
+    mem_limit: 1g
+    cpus: "1.0"
+    env_file:
+      - .env
+    volumes:
+      # Your real config, gitignored — see config/config.json for the
+      # anonymized example this repo ships and tracks instead.
+      - ./config.json:/app/config/config.json
+      - ./data:/data
+      # Mounts the whole $HOME, not just .claude/: Claude Code also writes
+      # top-level state (~/.claude.json) outside that subdirectory, and under
+      # read_only:true that needs to land somewhere writable. Ownership is
+      # fixed automatically at container start by docker-entrypoint.sh, so
+      # these host directories can belong to whatever uid created them.
+      - ./claude-home:/home/node
+    restart: unless-stopped
